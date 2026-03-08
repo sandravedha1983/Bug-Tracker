@@ -1,0 +1,11 @@
+flask
+flask-sqlalchemy
+flask-login
+werkzeug
+flask-mail
+itsdangerous
+python-dotenv
+flasgger
+requests
+psycopg2-binary
+gunicorn

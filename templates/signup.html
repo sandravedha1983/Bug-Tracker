@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[80vh]">
+    <div
+        class="w-full max-w-md bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+        <div class="bg-indigo-600 p-8 text-white text-center">
+            <h2 class="text-3xl font-bold mb-2">Create Account</h2>
+            <p class="text-indigo-100 opacity-90">Join the Mini Bug Tracker community</p>
+        </div>
+
+        <form method="POST" class="p-8 space-y-5">
+            <div class="space-y-1">
+                <label class="text-sm font-semibold text-slate-700" for="name">Full Name</label>
+                <input type="text" name="name" id="name" required placeholder="John Doe"
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-sm font-semibold text-slate-700" for="email">Email Address</label>
+                <input type="email" name="email" id="email" required placeholder="john@example.com"
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-sm font-semibold text-slate-700" for="password">Password (min. 6 chars)</label>
+                <input type="password" name="password" id="password" minlength="6" required placeholder="••••••••"
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-sm font-semibold text-slate-700" for="role">Requested Role</label>
+                <select name="role" id="role"
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                    <option value="tester">Tester</option>
+                    <option value="developer">Developer</option>
+                </select>
+                <p class="text-[10px] text-slate-400 mt-1">Note: Admin accounts cannot be created via signup.</p>
+            </div>
+
+            <button type="submit"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-indigo-200 hover:scale-[1.02] active:scale-[0.98] mt-4">
+                Sign Up
+            </button>
+
+            <p class="text-center text-sm text-slate-500 mt-6">
+                Already have an account? <a href="{{ url_for('main.login') }}"
+                    class="text-indigo-600 font-bold hover:underline">Login here</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "platform_admin/layout.html" %}
+
+{% block admin_content %}
+<header class="mb-8 flex justify-between items-end">
+    <div>
+        <h2 class="text-3xl font-bold text-slate-900">Database Viewer</h2>
+        <p class="text-slate-500">Read-only view of core platform tables.</p>
+    </div>
+
+    <div class="flex bg-white rounded-lg border border-slate-200 p-1 shadow-sm">
+        <a href="?table=users"
+            class="px-4 py-1.5 rounded-md text-sm font-medium {{ 'bg-slate-900 text-white' if table == 'users' else 'text-slate-600 hover:text-slate-900' }}">Users</a>
+        <a href="?table=bugs"
+            class="px-4 py-1.5 rounded-md text-sm font-medium {{ 'bg-slate-900 text-white' if table == 'bugs' else 'text-slate-600 hover:text-slate-900' }}">Bugs</a>
+    </div>
+</header>
+
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <table class="w-full text-left border-collapse">
+        <thead class="bg-slate-50 border-b border-slate-200">
+            <tr>
+                {% for col in cols %}
+                <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">{{ col }}</th>
+                {% endfor %}
+                <th class="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for row in data %}
+            <tr class="hover:bg-slate-50 transition-colors">
+                {% for col in cols %}
+                <td class="px-6 py-4 text-sm text-slate-600">
+                    <span class="max-w-xs truncate block">
+                        {{ row[col] if col != 'last_active_at' else row[col].strftime('%Y-%m-%d %H:%M') }}
+                    </span>
+                </td>
+                {% endfor %}
+                <td class="px-6 py-4 text-right">
+                    {% if table == 'users' %}
+                    <form action="{{ url_for('platform_admin.delete_user', user_id=row.id) }}" method="POST"
+                        class="inline" onsubmit="return confirm('Delete record permanently?')">
+                        <button type="submit"
+                            class="text-xs font-bold text-red-500 uppercase hover:underline">Del</button>
+                    </form>
+                    {% elif table == 'bugs' %}
+                    <form action="{{ url_for('platform_admin.delete_bug', bug_id=row.id) }}" method="POST"
+                        class="inline" onsubmit="return confirm('Delete bug permanently?')">
+                        <button type="submit"
+                            class="text-xs font-bold text-red-500 uppercase hover:underline">Del</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if not data %}
+    <div class="p-12 text-center">
+        <p class="text-slate-400 italic">No records found in the {{ table }} table.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

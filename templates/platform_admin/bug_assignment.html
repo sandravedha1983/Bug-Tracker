@@ -1,0 +1,82 @@
+{% extends "platform_admin/layout.html" %}
+
+{% block admin_content %}
+<header class="mb-8">
+    <h2 class="text-3xl font-bold text-slate-900">Bug Assignment</h2>
+    <p class="text-slate-500">Intelligent assignment based on developer availability and load.</p>
+</header>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Unassigned Bugs -->
+    <div class="lg:col-span-2 space-y-4">
+        <h3 class="text-lg font-bold text-slate-800">Unassigned Bugs</h3>
+        {% if bugs %}
+        {% for bug in bugs %}
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-start">
+            <div>
+                <span
+                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold {{ 'bg-red-100 text-red-700' if bug.priority == 'High' else 'bg-blue-100 text-blue-700' }} mb-2 uppercase tracking-wide">
+                    {{ bug.priority }}
+                </span>
+                <h4 class="font-bold text-slate-900 text-lg">{{ bug.title }}</h4>
+                <p class="text-slate-500 text-sm mt-1 line-clamp-2">{{ bug.description }}</p>
+                <p class="text-xs text-slate-400 mt-2">Reported on {{ bug.created_at.strftime('%Y-%m-%d') }}</p>
+            </div>
+
+            <div class="text-right ml-6">
+                <p class="text-xs text-slate-500 font-medium mb-1 uppercase tracking-wider">Suggested</p>
+                {% set suggested = suggestions.get(bug.id) %}
+                {% if suggested %}
+                <div class="mb-4">
+                    <span class="font-bold text-blue-600 block">{{ suggested.name }}</span>
+                    <span class="text-xs text-slate-400">
+                        {% if (now - suggested.last_active_at).total_seconds() < 300 %} <span
+                            class="text-blue-500 font-medium">Online</span>
+                    {% else %}
+                    Offline
+                    {% endif %}
+                    </span>
+                </div>
+                <form action="{{ url_for('platform_admin.auto_assign_dev_action', bug_id=bug.id) }}" method="POST">
+                    <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded-lg transition-all">
+                        Auto-Assign Developer
+                    </button>
+                </form>
+                {% else %}
+                <p class="text-sm text-slate-400 italic">No devs available</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="bg-slate-100 p-8 rounded-2xl text-center">
+            <p class="text-slate-500 italic">All bugs are currently assigned.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Available Developers (Right side list) -->
+    <div class="space-y-4">
+        <h3 class="text-lg font-bold text-slate-800">Available Developers</h3>
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+            {% for dev in devs %}
+            <div class="p-4">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="font-bold text-slate-900 text-sm">{{ dev.name }}</span>
+                    {% if (now - dev.last_active_at).total_seconds() < 300 %} <span
+                        class="w-2.5 h-2.5 bg-blue-600 rounded-full" title="Online"></span>
+                        {% else %}
+                        <span class="w-2.5 h-2.5 bg-slate-200 rounded-full" title="Offline"></span>
+                        {% endif %}
+                </div>
+                <div class="flex justify-between text-xs text-slate-500">
+                    <span>Workload: {{ dev.bugs_assigned|length }}</span>
+                    <span>Last active: {{ dev.last_active_at.strftime('%H:%M') }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

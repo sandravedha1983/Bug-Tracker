@@ -1,0 +1,92 @@
+{% extends "platform_admin/layout.html" %}
+
+{% block admin_content %}
+<header class="mb-8 flex justify-between items-center">
+    <div>
+        <h2 class="text-3xl font-bold text-slate-900">User Management</h2>
+        <p class="text-slate-500">View and manage all registered accounts.</p>
+    </div>
+</header>
+
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <table class="w-full text-left border-collapse">
+        <thead class="bg-slate-50 border-b border-slate-200">
+            <tr>
+                <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">User</th>
+                <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Role</th>
+                <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Activity</th>
+                <th class="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for user in users %}
+            <tr>
+                <td class="px-6 py-4">
+                    <div class="flex flex-col">
+                        <span class="font-bold text-slate-900">{{ user.name }}</span>
+                        <span class="text-sm text-slate-500">{{ user.email }}</span>
+                        <span class="text-xs text-slate-400 mt-1">ID: {{ user.id }} • Created: {{
+                            user.created_at.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <form action="{{ url_for('platform_admin.change_role', user_id=user.id) }}" method="POST">
+                        <select name="role" onchange="this.form.submit()"
+                            class="text-sm border border-slate-200 rounded px-2 py-1 bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="tester" {{ 'selected' if user.role=='tester' }}>Tester</option>
+                            <option value="developer" {{ 'selected' if user.role=='developer' }}>Developer</option>
+                            <option value="admin" {{ 'selected' if user.role=='admin' }}>Admin</option>
+                        </select>
+                    </form>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex flex-col gap-1">
+                        {% if user.is_verified %}
+                        <span
+                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 w-fit">Verified</span>
+                        {% else %}
+                        <span
+                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 w-fit">Unverified</span>
+                        {% endif %}
+
+                        {% if user.is_suspended %}
+                        <span
+                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 w-fit">Suspended</span>
+                        {% endif %}
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    {% if (now - user.last_active_at).total_seconds() < 300 %} <span
+                        class="flex items-center text-sm font-medium text-blue-600">
+                        <span class="w-2 h-2 bg-blue-600 rounded-full mr-2"></span> Online
+                        </span>
+                        {% else %}
+                        <span class="text-sm text-slate-400 italic">Offline</span>
+                        <span class="block text-xs text-slate-400 mt-0.5">Last seen: {{
+                            user.last_active_at.strftime('%H:%M') }}</span>
+                        {% endif %}
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <div class="flex justify-end gap-2">
+                        <form action="{{ url_for('platform_admin.toggle_suspend', user_id=user.id) }}" method="POST"
+                            class="inline">
+                            <button type="submit"
+                                class="text-sm font-medium {{ 'text-blue-600 hover:text-blue-800' if user.is_suspended else 'text-amber-600 hover:text-amber-800' }}">
+                                {{ 'Unsuspend' if user.is_suspended else 'Suspend' }}
+                            </button>
+                        </form>
+                        <form action="{{ url_for('platform_admin.delete_user', user_id=user.id) }}" method="POST"
+                            class="inline" onsubmit="return confirm('Permanently delete this user?')">
+                            <button type="submit"
+                                class="text-sm font-medium text-red-600 hover:text-red-800">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

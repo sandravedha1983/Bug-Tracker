@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8">
+    <header>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Analytics Dashboard</h1>
+        <p class="text-slate-500 mt-1">Real-time visualization of bug tracking metrics.</p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Bug Priority Distribution -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Bug Priority Distribution</h3>
+            <div class="h-64 flex items-center justify-center">
+                <canvas id="priorityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Bug Status Overview -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Bug Status Overview</h3>
+            <div class="h-64 flex items-center justify-center">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Bugs Reported Over Time -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Bugs Reported Over Time (Last 7 Days)</h3>
+            <div class="h-64">
+                <canvas id="trendsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Bugs by Developer -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Developer Workload</h3>
+            <div class="h-64">
+                <canvas id="developerChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}

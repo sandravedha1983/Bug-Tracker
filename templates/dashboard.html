@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8">
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard</h1>
+            <p class="text-slate-500 mt-1">Hello, {{ current_user.name }}. Here's what's happening with your bugs.</p>
+        </div>
+        <div class="flex gap-2">
+            <span
+                class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-semibold text-slate-500 shadow-sm">
+                {{ current_date or "Today" }}
+            </span>
+        </div>
+    </header>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500">Total Bugs</p>
+                    <h3 class="text-2xl font-bold text-slate-900">{{ stats.total }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500">Open Bugs</p>
+                    <h3 class="text-2xl font-bold text-slate-900">{{ stats.open }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500">High Priority</p>
+                    <h3 class="text-2xl font-bold text-slate-900">{{ stats.high_priority }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500">Resolved</p>
+                    <h3 class="text-2xl font-bold text-slate-900">{{ stats.closed }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-50 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-slate-900">Recent Bugs</h3>
+            <a href="{{ url_for('main.bugs') }}"
+                class="text-sm font-semibold text-indigo-600 hover:text-indigo-700">View
+                all</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                    <tr>
+                        <th class="px-6 py-4">Title</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4">Priority</th>
+                        <th class="px-6 py-4">Created</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for bug in recent_bugs %}
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <p class="font-semibold text-slate-900">{{ bug.title }}</p>
+                            <p class="text-xs text-slate-400 mt-0.5">{{ bug.ai_summary or "Building summary..." }}</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span
+                                class="px-2.5 py-1 rounded-full text-xs font-bold
+                                {{ 'bg-blue-100 text-blue-700 ring-1 ring-blue-400/30' if bug.status == 'Open' }}
+                                {{ 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-400/30' if bug.status == 'In Progress' }}
+                                {{ 'bg-purple-100 text-purple-700 ring-1 ring-purple-400/30' if bug.status == 'Resolved' }}
+                                {{ 'bg-slate-100 text-slate-600 ring-1 ring-slate-400/30' if bug.status == 'Closed' }}">
+                                {{ bug.status }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold
+                                {{ 'bg-red-100 text-red-700 ring-1 ring-red-400/30' if bug.priority == 'High' }}
+                                {{ 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-400/30' if bug.priority == 'Medium' }}
+                                {{ 'bg-green-100 text-green-700 ring-1 ring-green-400/30' if bug.priority == 'Low' }}">
+                                {{ bug.priority }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-slate-500">
+                            {{ bug.created_at.strftime('%b %d, %Y') }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-12 text-center text-slate-400">
+                            No bugs reported yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
